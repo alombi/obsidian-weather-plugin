@@ -3,8 +3,11 @@ A simple plugin for [Obsidian](https://obsidian.md) that shows in the status bar
 
 
 ## Installation
-This plugin is not available in the offical store, so you need to install it manually by downloading the latest release here on GitHub.
-
+1. Download `main.js` and `manifest.json` from the latest GitHub release
+2. Create a folder in your vault's `.obsidian/plugins` folder called "weather-plugin"
+3. Then copy and paste the `main.js` and `manifest.json` files into the new folder
+4. Activate Weather Plugin (make sure you disabled *Safe mode* in the community plugin tab)
+## Setting up
 **Important**: the plugin will need an [OpenWeatherMap](https://openweathermap.org) API key (free plan) for working. The key can be inserted in the plugin's setting in Obsidian
 
 ## Limitations
