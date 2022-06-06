@@ -1,15 +1,16 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
 
 interface PluginSettings {
-	location: string
+	location: string,
+	key: string
 }
 const DEFAULT_SETTINGS: PluginSettings = {
-	location: 'rome'
+	location: 'rome',
+	key:''
 }
 
 
-const key = 'YOUR KEY'
-async function getConditions(location: string) {
+async function getConditions(location: string, key: string) {
 	let url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}`
 	let req = await fetch(url)
 	let json = await req.json()
@@ -32,14 +33,23 @@ export default class StatusWeather extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		this.statusBar = this.addStatusBarItem();
-		var conditions = await getConditions(this.settings.location)
-		this.statusBar.setText(conditions);
+		if (this.settings.key) {
+			var conditions = await getConditions(this.settings.location, this.settings.key);
+			this.statusBar.setText(conditions);
+		} else {
+			this.statusBar.setText('Error')
+		}
+		
 		this.registerInterval(
 			window.setInterval(async () => {
-				var conditions = await getConditions(this.settings.location)
-				this.statusBar.setText(conditions);
+				if (this.settings.key) {
+					var conditions = await getConditions(this.settings.location, this.settings.key);
+					this.statusBar.setText(conditions);
+				} else {
+					this.statusBar.setText('Error')
+				}
 				console.log('weather update')
-			}, 60000)
+			}, 1000)
 		);
 		this.addSettingTab(new SampleSettingTab(this.app, this));
   }
@@ -71,6 +81,17 @@ class SampleSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.location = value;
 					await this.plugin.saveSettings();
-				}));
+				})
+			);
+		new Setting(containerEl)
+			.setName('OpenWeather API key')
+			.setDesc('A free OpenWeather API key is required for the plugin to work. Go to https://openweathermap.org to register and get a key')
+			.addText(text => text
+				.setValue(this.plugin.settings.key)
+				.onChange(async (value) => {
+					this.plugin.settings.key = value;
+					await this.plugin.saveSettings();
+				})
+		)
 	}
 }
