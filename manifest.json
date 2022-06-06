@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-weather-plugin",
+	"name": "Weather Plugin",
+	"version": "1.0.0",
+	"minAppVersion": "0.12.0",
+	"description": "Simple plugin that shows current weather for a specific location in the status bar.",
+	"author": "alombi",
+	"authorUrl": "https://alombi.xyz",
+	"isDesktopOnly": true
+}
