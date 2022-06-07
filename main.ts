@@ -11,12 +11,16 @@ const DEFAULT_SETTINGS: PluginSettings = {
 
 
 async function getConditions(location: string, key: string) {
-	let url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}`
-	let req = await fetch(url)
-	let json = await req.json()
-	console.log(json)
-	let conditions = json.weather[0].description
-	conditions = conditions.replace(/^\w/, (c: string) => c.toUpperCase());
+	let conditions;
+	try{
+		let url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}`
+		let req = await fetch(url)
+		let json = await req.json()
+		conditions = json.weather[0].description
+		conditions = conditions.replace(/^\w/, (c: string) => c.toUpperCase());
+	}catch(e){
+		conditions = 'Error'
+	}
 	return conditions
 }
 
@@ -29,27 +33,39 @@ export default class StatusWeather extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-	
 	async onload() {
 		await this.loadSettings();
+		let firstRequest = false;
 		this.statusBar = this.addStatusBarItem();
-		if (this.settings.key) {
+		if (this.settings.key && this.settings.location.length != 0) {
 			var conditions = await getConditions(this.settings.location, this.settings.key);
 			this.statusBar.setText(conditions);
+			firstRequest = true
 		} else {
 			this.statusBar.setText('Error')
 		}
-		
 		this.registerInterval(
 			window.setInterval(async () => {
-				if (this.settings.key) {
-					var conditions = await getConditions(this.settings.location, this.settings.key);
-					this.statusBar.setText(conditions);
+				if (this.settings.key && this.settings.location.length != 0) {
+					console.log('ok')
+					if(!firstRequest){
+						console.log('not made!')
+						var conditions = await getConditions(this.settings.location, this.settings.key);
+						this.statusBar.setText(conditions);
+						firstRequest = true
+					}
+					window.setInterval(async()=>{
+						var conditions = await getConditions(this.settings.location, this.settings.key);
+						this.statusBar.setText(conditions);
+						console.log('refresh')
+					}, 300000)
 				} else {
 					this.statusBar.setText('Error')
+					console.log('no request sent')
+					firstRequest = false
 				}
-				console.log('weather update')
-			}, 1000)
+				
+			}, 2000)
 		);
 		this.addSettingTab(new SampleSettingTab(this.app, this));
   }
