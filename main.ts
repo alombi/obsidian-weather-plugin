@@ -58,7 +58,7 @@ export default class StatusWeather extends Plugin {
 						var conditions = await getConditions(this.settings.location, this.settings.key);
 						this.statusBar.setText(conditions);
 						console.log('refresh')
-					}, 300000)
+					}, 600000)
 				} else {
 					this.statusBar.setText('Error')
 					console.log('no request sent')
