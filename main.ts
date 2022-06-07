@@ -54,11 +54,6 @@ export default class StatusWeather extends Plugin {
 						this.statusBar.setText(conditions);
 						firstRequest = true
 					}
-					window.setInterval(async()=>{
-						var conditions = await getConditions(this.settings.location, this.settings.key);
-						this.statusBar.setText(conditions);
-						console.log('refresh')
-					}, 600000)
 				} else {
 					this.statusBar.setText('Error')
 					console.log('no request sent')
@@ -67,6 +62,13 @@ export default class StatusWeather extends Plugin {
 				
 			}, 2000)
 		);
+		window.setInterval(async()=>{
+			if (this.settings.key && this.settings.location.length != 0) {
+				var conditions = await getConditions(this.settings.location, this.settings.key);
+				this.statusBar.setText(conditions);
+				console.log('refresh')
+			}
+		}, 600000)
 		this.addSettingTab(new SampleSettingTab(this.app, this));
   }
   async onunload() {
