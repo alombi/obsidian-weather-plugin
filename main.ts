@@ -49,7 +49,7 @@ export default class StatusWeather extends Plugin {
 				if (this.settings.key && this.settings.location.length != 0) {
 					console.log('ok')
 					if(!firstRequest){
-						console.log('not made!')
+						console.log('not yet made!')
 						var conditions = await getConditions(this.settings.location, this.settings.key);
 						this.statusBar.setText(conditions);
 						firstRequest = true
